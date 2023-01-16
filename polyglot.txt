@@ -1,0 +1,12 @@
+#<?php
+$a = 'a'; $/* 0; # */$a
+=begin
+();
+echo "php\n";
+function begin() {} $a = <<<nil
+=end
+puts "#ruby"; '
+=cut
+print "#perl\n";
+'# ';
+nil;

@@ -1,0 +1,124 @@
+@require: class-slydifi/theme/akasaka
+@require: code-printer/code-design
+@require: code-printer/code-printer
+@require: figbox/figbox
+
+let-block +code-block s = '<
+    +code-printer?:(
+      CodePrinter.default
+      |> CodePrinter.set-number-fun CodeDesign.number-fun-null
+    )(s);
+  >
+
+open FigBox
+in
+
+document '<
+  +make-title(|
+    title = {
+      |明日のあなたの役に立たない
+      |PHPコーディング技法
+      |～polyglot～
+      |};
+    author = {|nsfisis (いまむら)|};
+    date = {|第148回PHP勉強会＠東京|};
+  |);
+
+  +frame{自己紹介}<
+    +fig-center(vconcat [
+      hconcat [
+        textbox{nsfisis (いまむら)};
+        gap 20pt;
+        include-image 50pt `assets/me.jpeg`;
+      ];
+      gap 20pt;
+      textbox{\@ デジタルサーカス株式会社};
+    ]);
+  >
+
+  +frame{Polyglotとは}<
+    +fig-center(vconcat [
+      textbox{単一のソースコードが複数の言語として解釈可能なプログラム};
+      gap 20pt;
+      textbox{今回はPHP・Ruby・Perlの組み合わせ};
+    ]);
+  >
+
+  +frame{ソースコード}<
+    +code-block(
+      `#<?php
+$a = 'a'; $/* 0; # */$a
+=begin
+();
+echo "php\n";
+function begin() {} $a = <<<nil
+=end
+puts "#ruby"; '
+=cut
+print "#perl\n";
+'# ';
+nil;`
+    );
+    +p{
+      実行結果: \inline-code(`#php`);、\inline-code(`#ruby`);、\inline-code(`#perl`);
+    }
+  >
+
+  +frame{PHPとして解釈する}<
+    +code-block(
+      `#<?php`
+    );
+    +p{
+      \inline-code(`#`); とPHPタグ
+    }
+  >
+
+  +frame{PHPとして解釈する}<
+    +code-block(
+      `$a = 'a'; $/* 0; # */$a
+=begin
+();`
+    );
+    +p{
+      \inline-code(`$a`); に \inline-code(`'a'`); を代入
+    }
+    +p{
+      \inline-code(`$$a = begin();`); (variable variable)
+    }
+  >
+
+  +frame{PHPとして解釈する}<
+    +code-block(
+      `echo "php\n";`
+    );
+    +p{
+      出力部分。実際の出力には先頭に \inline-code(`#`); が付く
+    }
+  >
+
+  +frame{PHPとして解釈する}<
+    +code-block(
+      `function begin() {} $a = <<<nil
+=end
+puts "#ruby"; '
+=cut
+print "#perl\n";
+'# ';
+nil;`
+    );
+    +p{
+      関数 \inline-code(`begin()`); を定義
+    }
+    +p{
+      Here document (delimiter: \inline-code(`nil`);) で残りを飲み込む
+    }
+  >
+
+  +frame{おわりに}<
+    +fig-center(vconcat [
+      textbox{これにもう1言語足したものを};
+      gap 20pt;
+      textbox{PHPerKaigi 2023のPHPerチャレンジに出題します！};
+    ]);
+  >
+>
