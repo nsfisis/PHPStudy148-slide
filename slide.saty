@@ -121,4 +121,87 @@ nil;`
       textbox{PHPerKaigi 2023のPHPerチャレンジに出題します！};
     ]);
   >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(
+      `#<?php`
+    );
+    +p{
+      \inline-code(`#`); は行コメント
+    }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(
+      `$a = 'a'; $/* 0; # */$a`
+    );
+    +p{
+      \inline-code(`$a`); に \inline-code(`'a'`); を代入
+    }
+    +p{
+      \inline-code(`$/`); はRubyの特殊なグローバル変数。\inline-code(`*`); は乗算
+    }
+    +p{
+      \inline-code(`#`); 以降は行コメント
+    }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(
+      `=begin
+();
+echo "php\n";
+function begin() {} $a = <<<nil
+=end`
+    );
+    +p{
+      \inline-code(`=begin`); から \inline-code(`=end`); はコメント
+    }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(
+      `puts "#ruby"; '`
+    );
+    +p{
+      出力部。\inline-code(`'`); からは文字列リテラル
+    }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(
+      `puts "#ruby"; '
+=cut
+print "#perl\n";
+'# ';
+nil;`
+    );
+    +p{
+      文字列リテラルとして読み飛ばし、行コメント
+    }
+    +p{
+      \inline-code(`nil`); はPHPでいう \inline-code(`null`);
+    }
+  >
+
+  +frame{Perlとして解釈する}<
+    +code-block(
+      `#<?php
+$a = 'a'; $/* 0; # */$a
+=begin
+();
+echo "php\n";
+function begin() {} $a = <<<nil
+=end
+puts "#ruby"; '
+=cut
+print "#perl\n";
+'# ';
+nil;`
+    );
+    +p{
+      ほぼRubyと同じ。
+      Perlだと \inline-code(`=begin`); から \inline-code(`=cut`); までがコメント
+    }
+  >
 >
