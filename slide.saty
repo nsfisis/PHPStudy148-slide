@@ -1,14 +1,40 @@
 @require: class-slydifi/theme/akasaka
 @require: code-printer/code-design
 @require: code-printer/code-printer
+@require: code-printer/code-theme
 @require: figbox/figbox
 
-let-block +code-block s = '<
-    +code-printer?:(
-      CodePrinter.default
-      |> CodePrinter.set-number-fun CodeDesign.number-fun-null
-    )(s);
-  >
+let-block +code-block source keywords =
+  let syntax =
+    let void-syntax-rule = CodePrinter.syntax-rule-fun (fun _ -> None) in
+      CodePrinter.make-syntax (|
+        line-comment = void-syntax-rule;
+        block-comment = void-syntax-rule;
+        string = void-syntax-rule;
+        keywords = keywords;
+        identifier = void-syntax-rule;
+        others = [];
+      |)
+  in
+    '<
+      +code-printer?:(
+        CodePrinter.make-config syntax CodeTheme.iceberg-light
+        |> CodePrinter.set-number-fun CodeDesign.number-fun-null
+      )(source);
+    >
+
+let source = `#<?php
+$a = 'a'; $/* 0; # */$a
+=begin
+();
+echo "php\n";
+function begin() {} $a = <<<nil
+=end
+puts "#ruby"; '
+=cut
+print "#perl\n";
+'# ';
+nil;`
 
 open FigBox
 in
@@ -27,6 +53,7 @@ document '<
   +frame{自己紹介}<
     +fig-center(vconcat [
       hconcat [
+        gap 20pt;
         textbox{nsfisis (いまむら)};
         gap 20pt;
         include-image 50pt `assets/me.jpeg`;
@@ -45,160 +72,123 @@ document '<
   >
 
   +frame{ソースコード}<
-    +code-block(
-      `#<?php
-$a = 'a'; $/* 0; # */$a
-=begin
-();
-echo "php\n";
-function begin() {} $a = <<<nil
-=end
-puts "#ruby"; '
-=cut
-print "#perl\n";
-'# ';
-nil;`
-    );
+    +code-block(source)([]);
     +p{
       実行結果: \inline-code(`#php`);、\inline-code(`#ruby`);、\inline-code(`#perl`);
     }
   >
 
   +frame{PHPとして解釈する}<
-    +code-block(
-      `#<?php`
-    );
+    +code-block(source)([`#<?php`]);
     +p{
       \inline-code(`#`); とPHPタグ
     }
   >
 
   +frame{PHPとして解釈する}<
-    +code-block(
-      `$a = 'a'; $/* 0; # */$a
-=begin
-();`
-    );
+    +code-block(source)([`$a = 'a';`]);
     +p{
       \inline-code(`$a`); に \inline-code(`'a'`); を代入
     }
+  >
+
+  +frame{PHPとして解釈する}<
+    +code-block(source)([`$/* 0; # */$a`; `=begin`; `();`]);
     +p{
       \inline-code(`$$a = begin();`); (variable variable)
     }
   >
 
   +frame{PHPとして解釈する}<
-    +code-block(
-      `echo "php\n";`
-    );
+    +code-block(source)([`echo "php\n";`]);
     +p{
       出力部分。実際の出力には先頭に \inline-code(`#`); が付く
     }
   >
 
   +frame{PHPとして解釈する}<
-    +code-block(
-      `function begin() {} $a = <<<nil
-=end
-puts "#ruby"; '
-=cut
-print "#perl\n";
-'# ';
-nil;`
-    );
+    +code-block(source)([`function begin() {}`]);
     +p{
       関数 \inline-code(`begin()`); を定義
     }
+  >
+
+  +frame{PHPとして解釈する}<
+    +code-block(source)([`$a = <<<nil`; `=end`; `puts "#ruby"; '`; `=cut`; `print "#perl\n";`; `'# ';`; `nil;`]);
     +p{
       Here document (delimiter: \inline-code(`nil`);) で残りを飲み込む
     }
   >
 
   +frame{おわりに}<
-    +fig-center(vconcat [
-      textbox{これにもう1言語足したものを};
+    +fig-center(vconcat ?:(align-center) [
       gap 20pt;
-      textbox{PHPerKaigi 2023のPHPerチャレンジに出題します！};
+      textbox{来たる3月のPHPerKaigi 2023で、};
+      gap 20pt;
+      textbox{ここから\textbf{もう1言語足して}4言語にしたバージョンを};
+      gap 20pt;
+      textbox{弊社デジタルサーカスからPHPerチャレンジの問題として出題します！};
     ]);
   >
 
   +frame{Rubyとして解釈する}<
-    +code-block(
-      `#<?php`
-    );
+    +code-block(source)([`#<?php`]);
     +p{
       \inline-code(`#`); は行コメント
     }
   >
 
   +frame{Rubyとして解釈する}<
-    +code-block(
-      `$a = 'a'; $/* 0; # */$a`
-    );
+    +code-block(source)([`$a = 'a';`]);
     +p{
       \inline-code(`$a`); に \inline-code(`'a'`); を代入
     }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(source)([`$/* 0;`]);
     +p{
       \inline-code(`$/`); はRubyの特殊なグローバル変数。\inline-code(`*`); は乗算
     }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(source)([`# */$a`]);
     +p{
       \inline-code(`#`); 以降は行コメント
     }
   >
 
   +frame{Rubyとして解釈する}<
-    +code-block(
-      `=begin
-();
-echo "php\n";
-function begin() {} $a = <<<nil
-=end`
-    );
+    +code-block(source)([`=begin`; `();`; `echo "php\n";`; `function begin() {} $a = <<<nil`; `=end`]);
     +p{
       \inline-code(`=begin`); から \inline-code(`=end`); はコメント
     }
   >
 
   +frame{Rubyとして解釈する}<
-    +code-block(
-      `puts "#ruby"; '`
-    );
+    +code-block(source)([`puts "#ruby";`]);
     +p{
-      出力部。\inline-code(`'`); からは文字列リテラル
+      出力部
     }
   >
 
   +frame{Rubyとして解釈する}<
-    +code-block(
-      `puts "#ruby"; '
-=cut
-print "#perl\n";
-'# ';
-nil;`
-    );
+    +code-block(source)([`=cut`; `print "#perl\n";`; `'# ';`]);
     +p{
       文字列リテラルとして読み飛ばし、行コメント
     }
+  >
+
+  +frame{Rubyとして解釈する}<
+    +code-block(source)([`nil;`]);
     +p{
-      \inline-code(`nil`); はPHPでいう \inline-code(`null`);
+      Rubyの \inline-code(`nil`); はPHPでいう \inline-code(`null`);
     }
   >
 
   +frame{Perlとして解釈する}<
-    +code-block(
-      `#<?php
-$a = 'a'; $/* 0; # */$a
-=begin
-();
-echo "php\n";
-function begin() {} $a = <<<nil
-=end
-puts "#ruby"; '
-=cut
-print "#perl\n";
-'# ';
-nil;`
-    );
+    +code-block(source)([`=begin`; `=cut`]);
     +p{
       ほぼRubyと同じ。
       Perlだと \inline-code(`=begin`); から \inline-code(`=cut`); までがコメント
